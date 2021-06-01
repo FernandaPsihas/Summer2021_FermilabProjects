@@ -48,61 +48,8 @@ Feel free to contact the [Fermilab service desk](https://fermi.servicenowservice
 - Make sure you have access to our [google drive](https://drive.google.com/drive/folders/1UxBNgoPRD8kPxDypgZ2RC8pj6RG8TFJ7?usp=sharing) 
 - Upload your slides to the meeting folder (or create one first if it doesn't exist)
 
-## Getting Started
-Here is a description on how to log in to the Fermilab computers and how to get 
-started with your own directories.
 
-#### Logging On
-Follow these commands on your terminal to access the computers: 
-- kinit -f <your_principle>@FNAL.GOV
-- -Y -X <your_principle>@uboonegpvm01.fnal.gov 
-- Now you should be on uboonegpvm01 (the number indicates which computer node you are on)
 
-#### Your Workspace
-Run the following commands to get to the right place and organize your workspace. I 
-recommend running these all at least once, and then having them run on startup.
-- cd /uboone/app/users/<your_principle>/
-- mkdir FirstTests
-- Use one of the following to copy the GitHub repository, the first didn't work for me but has worked for others:
-  git clone git@github.com:FernandaPsihas/Summer2021_FermilabProjects.git
-  
-  or
 
-  git clone https://github.com/FernandaPsihas/Summer2021_FermilabProjects.git 
-
-- cd Summer2021_FermilabProjects
-- mkdir MicroBooNE_RadonDoping
-- cd MicroBooNE_RadonDoping
-- cp ../README.md .
-- mkdir <yourprinciple>_firstplots
-
-#### Setting up the Environment
-Run these commands when you plan to use root, or other programs.
-- cd /wherever_you_are_working/
-- source /cvmfs/uboone.opensciencegrid.org/products/setup_uboone.sh
-- setup uboonecode v08_00_00_41 -q e17:prof
-
-#### Some Fitting Practice
-Here is a fitting task using an already made C++ file:
-- cp /uboone/app/users/jaz8600/work/FromWhitAndIvan/WorkingArea/Analysis/CheckBetaAlphaEnergies.C .
-- root CheckBetaAlphaEnergies.C (root -l allows you to open root without the welcome screen)
-- You should get two plots and you will want to fit the Bi214 plot
-- Use the following resources to fit the Bi214 plot with a "pol6" function:
-  [TF1 Class Info](https://root.cern.ch/doc/master/classTF1.html)
-  [ROOT Guide Fitting Histograms](https://root.cern.ch/root/htmldoc/guides/users-guide/FittingHistograms.html) 
-
-#### Aliasing and Start on Log-in
-Here is some guidance on how to have commands run on log-in and how to alias. An alias is just a command nickname.
-- pico ~/.profile
-- Start adding commands such as cd /uboone/app/users/<your_principle>
-- Add an alias if you like: alias root='root -l' 
-
-#### Commiting Your Changes
-Here are the commands needed for commiting changes to GitHub:
-- git status (see what you have changed)
-- git diff (check what you are commiting)
-- git add <file_name> (add what you want to commit)
-- git commit -m <message>
-- git push origin main (push to the online repository)
 
 
