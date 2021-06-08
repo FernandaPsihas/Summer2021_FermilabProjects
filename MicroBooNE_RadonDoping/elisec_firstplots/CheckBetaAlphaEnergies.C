@@ -81,8 +81,13 @@ void CheckBetaAlphaEnergies(){
   TH1F* Bi214_betaEnergy = new TH1F("Bi214_betaEnergy",";^{214}Bi #beta Energy [MeV]; Events",100,0, 5);
   TH1F* Po214_alphaEnergy = new TH1F("Po214_alphaEnergy",";^{214}Po #alpha Energy [MeV]; Events",100,6, 8);
   // Add new histograms here! 
+  
+  // Beta energy spectrum plotted from a text file
+  TGraph *BetaSpec = new TGraph("BetadndE.txt");
 
-
+  //Useful Variables
+  Double_t Area;
+  Double_t NumEnt;
   // Here we will loop through all the events in that file:
   for (gallery::Event ev(filenames) ; !ev.atEnd(); ev.next()) {
     
@@ -125,8 +130,18 @@ void CheckBetaAlphaEnergies(){
   TCanvas* c1 = new TCanvas();
   c1->cd();
   // now we can draw our plots!
+
+  //Area = Bi214_betaEnergy->Integral(0,5);
+  //cout << endl << Area << endl;
+  //Bi214_betaEnergy->Scale(1.0/Area);
+ 
+  //NumEnt = Bi214_betaEnergy->GetEntries();
+  //cout << endl << NumEnt << endl;
+  //Bi214_betaEnergy->Scale(1.0/NumEnt);
+
   Bi214_betaEnergy->Fit("pol6");
   Bi214_betaEnergy->Draw();
+  BetaSpec->Draw("same");
   
   TCanvas* c2 = new TCanvas();
   c2->cd();
