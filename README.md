@@ -55,7 +55,7 @@ started with your own directories.
 #### Logging On
 Follow these commands on your terminal to access the computers: 
 - kinit -f <your_principle>@FNAL.GOV
-- -Y -X <your_principle>@uboonegpvm01.fnal.gov 
+- ssh -Y -X <your_principle>@uboonegpvm01.fnal.gov 
 - Now you should be on uboonegpvm01 (the number indicates which computer node you are on)
 
 #### Your Workspace
