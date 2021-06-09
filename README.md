@@ -74,22 +74,7 @@ recommend running these all at least once, and then having them run on startup.
 - mkdir MicroBooNE_RadonDoping
 - cd MicroBooNE_RadonDoping
 - cp ../README.md .
-- mkdir <yourprinciple>_firstplots
-
-#### Setting up the Environment
-Run these commands when you plan to use root, or other programs.
-- cd /wherever_you_are_working/
-- source /cvmfs/uboone.opensciencegrid.org/products/setup_uboone.sh
-- setup uboonecode v08_00_00_41 -q e17:prof
-
-#### Some Fitting Practice
-Here is a fitting task using an already made C++ file:
-- cp /uboone/app/users/jaz8600/work/FromWhitAndIvan/WorkingArea/Analysis/CheckBetaAlphaEnergies.C .
-- root CheckBetaAlphaEnergies.C (root -l allows you to open root without the welcome screen)
-- You should get two plots and you will want to fit the Bi214 plot
-- Use the following resources to fit the Bi214 plot with a "pol6" function:
-  [TF1 Class Info](https://root.cern.ch/doc/master/classTF1.html)
-  [ROOT Guide Fitting Histograms](https://root.cern.ch/root/htmldoc/guides/users-guide/FittingHistograms.html) 
+- mkdir (yourprinciple)_firstplots
 
 #### Aliasing and Start on Log-in
 Here is some guidance on how to have commands run on log-in and how to alias. An alias is just a command nickname.
