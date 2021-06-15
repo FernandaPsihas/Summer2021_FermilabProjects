@@ -90,4 +90,10 @@ Here are the commands needed for commiting changes to GitHub:
 - git commit -m <message>
 - git push origin main (push to the online repository)
 
+#### Emacs Tutorials
+  https://www.youtube.com/watch?v=NXqZWfQRo8M
+  https://www.youtube.com/watch?v=E3y-0q4BVwA
+  https://www.youtube.com/watch?v=GMQNjn7Bf2w
+  https://www.gnu.org/software/emacs/refcards/pdf/refcard.pdf
+  
 
