@@ -95,30 +95,43 @@ void LookingAtHitsfromBetasPlane0(){
   TH1F* Bi214_betaFailedRecoTime = new TH1F("Bi214_betaFailedRecoTime","",1000,-5000000, 5000000);
   TH2F* Bi214_PrecisionvsCX = new TH2F("Bi214_PrecisionvsCX","",40,0,280,50,-1.3,2.1);
   TH2F* Bi214_PrecisionvsCY = new TH2F("Bi214_PrecisionvsCY","",60,-120,120,50,-1.3,2.1);
-  TH2F* Bi214_PrecisionvsCZ = new TH2F("Bi214_PrecisionvsCZ","",40,0,280,50,-1.3,2.1);
+  TH2F* Bi214_PrecisionvsCZ = new TH2F("Bi214_PrecisionvsCZ","",80,0,1100,50,-1.3,2.1);
   TH2F* Bi214_PrecisionvsCT = new TH2F("Bi214_PrecisionvsCT","",60,-3000000,3000000,50,-1.3,2.1);
   TH2F* Bi214_PrecisionvsReco = new TH2F("Bi214_PrecisionvsReco","",75,0,3.5,50,-1.3,2.1);
   TH2F* Bi214_PrecisionvsTrue = new TH2F("Bi214_PrecisionvsTrue","",75,0,3.5,50,-1.3,2.1);
+  TH2F* Bi214_PrecisionvsXMom = new  TH2F("Bi214_PrecisionvsXMom","",60,-3,3,50,-1.3,2.1);
+  TH2F* Bi214_PrecisionvsYMom = new TH2F("Bi214_PrecisionvsYMom","",60,-3,3,50,-1.3,2.1);
+  TH2F* Bi214_PrecisionvsZMom = new TH2F("Bi214_PrecisionvsZMom","",60,-3,3,50,-1.3,2.1);
+  TH2F* Bi214_PrecisionvsTMom = new TH2F("Bi214_PrecisionvsTMom","",60,0,3.5,50,-1.3,2.1);
+  
 
   //We can also make a file that contains a multidimensional
   //break down for our data, we'll build this for each beta 
   TFile* out = new TFile("outfile_mc_TESTCOMPARE.root","RECREATE");  
   TTree* fTree = new TTree("betaTree","ForEachTruthBeta");
   double betaTrueEnergy;
-  double betaRecoEnergy_plane0;
+  double betaRecoEnergy_plane2;
   double betaCreationTime;
   double betaCreationX;
   double betaCreationY;
   double betaCreationZ;
   double betaPrecision;
+  double betaMomentumX;
+  double betaMomentumY;
+  double betaMomentumZ;
+  double betaMomentumT;
   
   fTree->Branch("betaTrueEnergy",&betaTrueEnergy);
-  fTree->Branch("betaRecoEnergy_plane0",&betaRecoEnergy_plane0);
+  fTree->Branch("betaRecoEnergy_plane2",&betaRecoEnergy_plane2);
   fTree->Branch("betaCreationTime",&betaCreationTime);
   fTree->Branch("betaCreationX",&betaCreationX);
   fTree->Branch("betaCreationY",&betaCreationY);
   fTree->Branch("betaCreationZ",&betaCreationZ);
   fTree->Branch("betaPrecision",&betaPrecision);
+  fTree->Branch("betaMomentumX",&betaMomentumX);
+  fTree->Branch("betaMomentumY",&betaMomentumY);
+  fTree->Branch("betaMomentumZ",&betaMomentumZ);
+  fTree->Branch("betaMomentumT",&betaMomentumT);
 
   // Here we will loop through all the events in that file:
   for (gallery::Event ev(filenames) ; !ev.atEnd(); ev.next()) {
@@ -141,11 +154,15 @@ void LookingAtHitsfromBetasPlane0(){
       
       //We'll want to initialize all our variable here
       betaTrueEnergy = 0;
-      betaRecoEnergy_plane0 = 0;
+      betaRecoEnergy_plane2 = 0;
       betaCreationTime = 0;
       betaCreationX = 0;
       betaCreationY = 0;
       betaCreationZ = 0;
+      betaMomentumX = 0;
+      betaMomentumY = 0;
+      betaMomentumZ = 0;
+      betaMomentumT = 0;
       
       //reject anything that is not the particles from the decay
       if(mcparts[mcp].Mother() != 0) continue;      
@@ -163,7 +180,11 @@ void LookingAtHitsfromBetasPlane0(){
 	  betaCreationX = mcparts[mcp].Position(0).X();
 	  betaCreationY = mcparts[mcp].Position(0).Y();
 	  betaCreationZ = mcparts[mcp].Position(0).Z();
-	    
+	  betaMomentumX = mcparts[mcp].Momentum(0).Px()*1000;
+	  betaMomentumY = mcparts[mcp].Momentum(0).Py()*1000;
+	  betaMomentumZ = mcparts[mcp].Momentum(0).Pz()*1000;
+	  betaMomentumT = mcparts[mcp].Momentum(0).Pt()*1000;
+
 	  // Let's collect all the hits from these truth particles
 	  auto hit_vec = hit_per_part.at(mcp);
 	  
@@ -173,23 +194,27 @@ void LookingAtHitsfromBetasPlane0(){
 	  for(auto hit : hit_vec){
 	    
 	    if(hit->WireID().Plane == 0){
-	      betaRecoEnergy_plane0 += hit->Integral();
-	    }//Let's look at plane 0
+	      betaRecoEnergy_plane2 += hit->Integral();
+	    }//Only study hits on "the good plane"
 	    
 	  }//End iterate through hits
 
-	  betaPrecision = ((betaRecoEnergy_plane0/100.0)-betaTrueEnergy)/betaTrueEnergy;
+	  betaPrecision = ((betaRecoEnergy_plane2/100)-betaTrueEnergy)/betaTrueEnergy;
 
-	  if(betaRecoEnergy_plane0 > 0 && betaPrecision < 5){
+	  if(betaRecoEnergy_plane2 > 0 && betaPrecision < 5){
 	    Bi214_betaTrueEnergy->Fill(betaTrueEnergy);
-	    Bi214_betaRecoEnergy->Fill(betaRecoEnergy_plane0/100.0);
-	    Bi214_betaTrueVsRecoEnergy->Fill(betaTrueEnergy, betaRecoEnergy_plane0/100.0);
+	    Bi214_betaRecoEnergy->Fill(betaRecoEnergy_plane2/100.0);
+	    Bi214_betaTrueVsRecoEnergy->Fill(betaTrueEnergy, betaRecoEnergy_plane2/100.0);
 	    Bi214_PrecisionvsCX->Fill(betaCreationX,betaPrecision);
 	    Bi214_PrecisionvsCY->Fill(betaCreationY,betaPrecision);
 	    Bi214_PrecisionvsCZ->Fill(betaCreationZ,betaPrecision);
 	    Bi214_PrecisionvsCT->Fill(betaCreationTime,betaPrecision);
-	    Bi214_PrecisionvsReco->Fill(betaRecoEnergy_plane0/100.0,betaPrecision);
+	    Bi214_PrecisionvsReco->Fill(betaRecoEnergy_plane2/100.0,betaPrecision);
 	    Bi214_PrecisionvsTrue->Fill(betaTrueEnergy,betaPrecision);
+	    Bi214_PrecisionvsXMom->Fill(betaMomentumX,betaPrecision);
+	    Bi214_PrecisionvsYMom->Fill(betaMomentumY,betaPrecision);
+	    Bi214_PrecisionvsZMom->Fill(betaMomentumZ,betaPrecision);
+	    Bi214_PrecisionvsTMom->Fill(betaMomentumT,betaPrecision);
 	  }
 	  else{
 	    Bi214_betaFailedRecoTime->Fill(betaCreationTime);
@@ -219,7 +244,7 @@ void LookingAtHitsfromBetasPlane0(){
   // now we can draw our plots!
   Bi214_betaRecoEnergy->GetYaxis()->SetTitle("Number of Betas");
   Bi214_betaRecoEnergy->GetXaxis()->SetTitle("Reconstructed Energy (~MeV)");
-  Bi214_betaRecoEnergy->SetTitle("Plane:0 Reconstructed Energy Beta Spectrum");
+  Bi214_betaRecoEnergy->SetTitle("Plane 0: Reconstructed Energy Beta Spectrum");
   Bi214_betaRecoEnergy->Draw("");
   
   TCanvas* c3 = new TCanvas();
@@ -234,14 +259,14 @@ void LookingAtHitsfromBetasPlane0(){
   c4->cd();
   // now we can draw our plots!
   Bi214_betaFailedRecoTime->GetYaxis()->SetTitle("Number of Betas");
-  Bi214_betaFailedRecoTime->GetXaxis()->SetTitle("Reconstructed Time (unit?)");
+  Bi214_betaFailedRecoTime->GetXaxis()->SetTitle("Reconstructed Time (microsec)");
   Bi214_betaFailedRecoTime->SetTitle("Plane 0: Reconstructed Time of Betas");
   Bi214_betaFailedRecoTime->Draw("");
 
   TCanvas* c5 = new TCanvas();
   c5->cd();
   // now we can draw our plots! 
-  Bi214_PrecisionvsCX->GetXaxis()->SetTitle("Start X Position (unit?)");
+  Bi214_PrecisionvsCX->GetXaxis()->SetTitle("Start X Position (cm)");
   Bi214_PrecisionvsCX->GetYaxis()->SetTitle("Precision (Reco - True/True)");
   Bi214_PrecisionvsCX->SetTitle("Plane 0: Precision vs. X Creation Vertex");
   Bi214_PrecisionvsCX->Draw("colz");
@@ -249,7 +274,7 @@ void LookingAtHitsfromBetasPlane0(){
   TCanvas* c6 = new TCanvas();
   c6->cd();
   // now we can draw our plots! 
-  Bi214_PrecisionvsCY->GetXaxis()->SetTitle("Start Y Position (unit?)");
+  Bi214_PrecisionvsCY->GetXaxis()->SetTitle("Start Y Position (cm)");
   Bi214_PrecisionvsCY->GetYaxis()->SetTitle("Precision (Reco - True/True)");
   Bi214_PrecisionvsCY->SetTitle("Plane 0: Precision vs. Y Creation Vertex");
   Bi214_PrecisionvsCY->Draw("colz");
@@ -257,7 +282,7 @@ void LookingAtHitsfromBetasPlane0(){
   TCanvas* c7 = new TCanvas();
   c7->cd();
   // now we can draw our plots! 
-  Bi214_PrecisionvsCZ->GetXaxis()->SetTitle("Start Z Position (unit?)");
+  Bi214_PrecisionvsCZ->GetXaxis()->SetTitle("Start Z Position (cm)");
   Bi214_PrecisionvsCZ->GetYaxis()->SetTitle("Precision (Reco - True/True)");
   Bi214_PrecisionvsCZ->SetTitle("Plane 0: Precision vs. Z Creation Vertex");
   Bi214_PrecisionvsCZ->Draw("colz");
@@ -265,7 +290,7 @@ void LookingAtHitsfromBetasPlane0(){
   TCanvas* c8 = new TCanvas();
   c8->cd();
   // now we can draw our plots! 
-  Bi214_PrecisionvsCT->GetXaxis()->SetTitle("Reconstructed Time (unit?)");
+  Bi214_PrecisionvsCT->GetXaxis()->SetTitle("Reconstructed Time (microsecs)");
   Bi214_PrecisionvsCT->GetYaxis()->SetTitle("Precision (Reco - True/True)");
   Bi214_PrecisionvsCT->SetTitle("Plane 0: Precision vs. Reconstructed Time");
   Bi214_PrecisionvsCT->Draw("colz");
@@ -285,6 +310,38 @@ void LookingAtHitsfromBetasPlane0(){
   Bi214_PrecisionvsTrue->GetYaxis()->SetTitle("Precision (Reco - True/True)");
   Bi214_PrecisionvsTrue->SetTitle("Plane 0: Precision vs. True Energy");
   Bi214_PrecisionvsTrue->Draw("colz");
+
+  TCanvas* c11 = new TCanvas();
+  c11->cd();
+  // now we can draw our plots! 
+  Bi214_PrecisionvsXMom->GetXaxis()->SetTitle("Start X Momentum (MeV)");
+  Bi214_PrecisionvsXMom->GetYaxis()->SetTitle("Precision (Reco - True/True)");
+  Bi214_PrecisionvsXMom->SetTitle("Plane 0: Precision vs. X Momentum");
+  Bi214_PrecisionvsXMom->Draw("colz");
+
+  TCanvas* c12 = new TCanvas();
+  c12->cd();
+  // now we can draw our plots! 
+  Bi214_PrecisionvsYMom->GetXaxis()->SetTitle("Start Y Momentum (MeV)");
+  Bi214_PrecisionvsYMom->GetYaxis()->SetTitle("Precision (Reco - True/True)");
+  Bi214_PrecisionvsYMom->SetTitle("Plane 0: Precision vs. Y Momentum");
+  Bi214_PrecisionvsYMom->Draw("colz");
+
+  TCanvas* c13 = new TCanvas();
+  c13->cd();
+  // now we can draw our plots! 
+  Bi214_PrecisionvsZMom->GetXaxis()->SetTitle("Start Z Momentum (MeV)");
+  Bi214_PrecisionvsZMom->GetYaxis()->SetTitle("Precision (Reco - True/True)");
+  Bi214_PrecisionvsZMom->SetTitle("Plane 0: Precision vs. Z Momentum");
+  Bi214_PrecisionvsZMom->Draw("colz");
+
+  TCanvas* c14 = new TCanvas();
+  c14->cd();
+  // now we can draw our plots! 
+  Bi214_PrecisionvsTMom->GetXaxis()->SetTitle("Start Transverse Momentum (MeV)");
+  Bi214_PrecisionvsTMom->GetYaxis()->SetTitle("Precision (Reco - True/True)");
+  Bi214_PrecisionvsTMom->SetTitle("Plane 0: Precision vs. Transverse Momentum");
+  Bi214_PrecisionvsTMom->Draw("colz");
 
   //Let's write out our file and tree
   out->cd();  
