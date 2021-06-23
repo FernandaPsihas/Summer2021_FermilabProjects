@@ -78,7 +78,7 @@ void LookingAtHitsfromBetasPlane0(){
        back_inserter(filenames));
   
   //We'll just check the first 10k files for now
-  filenames.erase(filenames.begin()+10,filenames.end());
+  filenames.erase(filenames.begin()+40,filenames.end());
   
   //Here I just hard coding a file for testing, we can adjust this later 
   //vector<string> filenames {"/pnfs/uboone/scratch/users/jaz8600/BiPo_overlay_BetterDL_2300perEvent/A/v08_00_00_41/44567749_1/BeamOffRun-2018_7_9_0_9_13-0017597-00078_20180713T201835_ext_unbiased_2_20210525T220436_simmxd_detsim_mix_r1a_r1b_r1c_detsim_mix_r1a.root"};
