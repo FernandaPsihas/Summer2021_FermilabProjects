@@ -78,7 +78,7 @@ void LookingAtHitsfromBetasPlane1(){
        back_inserter(filenames));
   
   //We'll just check the first 10k files for now
-  filenames.erase(filenames.begin()+10,filenames.end());
+  filenames.erase(filenames.begin()+200,filenames.end());
   
   //Here I just hard coding a file for testing, we can adjust this later 
   //vector<string> filenames {"/pnfs/uboone/scratch/users/jaz8600/BiPo_overlay_BetterDL_2300perEvent/A/v08_00_00_41/44567749_1/BeamOffRun-2018_7_9_0_9_13-0017597-00078_20180713T201835_ext_unbiased_2_20210525T220436_simmxd_detsim_mix_r1a_r1b_r1c_detsim_mix_r1a.root"};
@@ -241,11 +241,12 @@ void LookingAtHitsfromBetasPlane1(){
   TCanvas* c1 = new TCanvas();
   c1->cd();
   // now we can draw our plots!
-  Bi214_betaTrueEnergy->GetYaxis()->SetTitle("Number of Betas");
-  Bi214_betaTrueEnergy->GetXaxis()->SetTitle("True Beta Energy (MeV)");
-  Bi214_betaTrueEnergy->SetTitle("Plane 1: True Energy Beta Spectrum");
-  Bi214_betaTrueEnergy->Draw("");
-
+  Bi214_PrecisionvsReco->GetYaxis()->SetTitle("Precision");
+  Bi214_PrecisionvsReco->GetXaxis()->SetTitle("Reco Energy (~MeV)");
+  Bi214_PrecisionvsReco->SetTitle("Plane 1: Precision vs Reco");
+  Bi214_PrecisionvsReco->Draw("colz");
+  Bi214_PrecisionvsReco->SaveAs("Plane1_PrecisionvsReco.root");
+  /*
   TCanvas* c2 = new TCanvas();
   c2->cd();
   // now we can draw our plots!
@@ -381,7 +382,7 @@ void LookingAtHitsfromBetasPlane1(){
   Bi214_CXvsReco->GetYaxis()->SetTitle("Creation X (cm)");
   Bi214_CXvsReco->SetTitle("Plane 1: Creation X vs. Reconstructed Energy");
   Bi214_CXvsReco->Draw("colz");
-
+  */
   //Let's write out our file and tree
   out->cd();  
   fTree->Write();
