@@ -19,6 +19,7 @@ double ErrorProp(double A, double B, double SigA, double SigB){
   
   Error = f * TMath::Sqrt(PartErrSq);
   
+
   return Error;
 } 
 
