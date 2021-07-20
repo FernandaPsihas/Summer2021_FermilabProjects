@@ -46,6 +46,7 @@
 //I'll only need truth particle info for now:
 #include "nusimdata/SimulationBase/MCParticle.h"
 #include "lardataobj/RecoBase/Hit.h"
+#include "lardataobj/RecoBase/Cluster.h"
 #include "lardataobj/AnalysisBase/BackTrackerMatchingData.h"
 
 //This way you can be lazy
@@ -64,7 +65,7 @@ double FittedFunction(double *xx, double *par)
   return par[0]*BetaData->Eval(xx[0]);
 }
 
-void LookingAtHitsfromBetas(){
+void CheckingHits(){
 
   // create a vector of files we want to process
   //  std::vector<std::string> filenames;
@@ -118,113 +119,35 @@ void LookingAtHitsfromBetas(){
 
   // Here we will loop through all the events in that file:
   for (gallery::Event ev(filenames) ; !ev.atEnd(); ev.next()) {
-    
-    // We want to get new "data products" out of the files here
-    // currently we are intersted in the truth particles 
-    //  .. You can find more data products on the event by doing:
-    //       rootstat.py <file_name>.root if uboonecode is setup
-    auto const &mcpart_handle =    
-      ev.getValidHandle< std::vector<simb::MCParticle> >("largeant");
 
-    //Convert our C++ "pointer" into an object
-    // this is now and std::vector<simb::MCParticle> 
-    auto mcparts(*mcpart_handle);
+    auto const &hit_handle1 =    
+      ev.getValidHandle< std::vector<recob::Hit> >("cosmicfilter");
 
-    art::FindManyP<recob::Hit, anab::BackTrackerHitMatchingData> hit_per_part(mcpart_handle,ev,"gaushitTruthMatch");     
+    auto const &hit_handle2 =    
+      ev.getValidHandle< std::vector<recob::Hit> >("gaushit");
 
-    
-    // We can iterate through all the truth particles
-    for(int mcp = 0; mcp < mcparts.size(); mcp++){
+
+    std::vector< art::Ptr< recob::Hit > > hits1;
+    art::fill_ptr_vector(hits1, hit_handle1);
+
+    std::vector< art::Ptr< recob::Hit > > hits2;
+    art::fill_ptr_vector(hits2, hit_handle2);
+
+    for(int h1 = 0; h1 < hits1.size(); h1++){
+      auto hit1 = hits1.at(h1);
       
-      //We'll want to initialize all our variable here
-      betaTrueEnergy = 0;
-      betaRecoEnergy_plane2 = 0;
-      betaMaxADCHit_plane2 = 0;
-      betaCreationTime = 0;
-      betaCreationX = 0;
-      betaCreationY = 0;
-      betaCreationZ = 0;
-      
-      //reject anything that is not the particles from the decay
-      if(mcparts[mcp].Mother() != 0) continue;      
+      for(int h2 = 0; h2 < hits2.size(); h2++){ 
+	auto hit2 = hits2.at(h2);
 
-      if(mcparts[mcp].PdgCode() == 11) // check if it is a beta
-	{
-	  // Here .E(0) is the total starting energy
-	  // we are most interested in the kinetic energy 
-	  // so we'll subtract the Mass() of the particle
-	  // also LArSoft uses GeV so we convert to MeV by *1000
-	  
-	  betaTrueEnergy = (mcparts[mcp].E(0)-mcparts[mcp].Mass())*1000.;
+	if(hit1->RMS() == hit2->RMS() &&
+	   hit1->Integral() == hit2->Integral() && 
+	   hit1->StartTick() == hit2->StartTick()){
+	  std::cout << "key1 : " << hit1.key() << ", key2: " << hit2.key() << std::endl;
+	}
 
-	  betaCreationTime = mcparts[mcp].T(0);
-	  betaCreationX = mcparts[mcp].Position(0).X();
-	  betaCreationY = mcparts[mcp].Position(0).Y();
-	  betaCreationZ = mcparts[mcp].Position(0).Z();
-	    
-	  // Let's collect all the hits from these truth particles
-	  auto hit_vec = hit_per_part.at(mcp);
-	  
-	  //this is a vector of all the recob::Hits that are matched
-	  // to these truth particles let's iterate through them
-	  // and we'll want to add it all up for this particle
-	  for(auto hit : hit_vec){
-	    
-	    if(hit->WireID().Plane == 2){
-	      betaRecoEnergy_plane2 += hit->Integral();
-
-	      
-
-	      if(hit->PeakAmplitude() > betaMaxADCHit_plane2)
-		betaMaxADCHit_plane2 = hit->PeakAmplitude();
-
-	    }//Only study hits on "the good plane"
-	    
-	  }//End iterate through hits
-
-	  if(betaRecoEnergy_plane2 > 0){
-	    Bi214_betaTrueEnergy->Fill(betaTrueEnergy);
-	    Bi214_betaRecoEnergy->Fill(betaRecoEnergy_plane2);
-	    Bi214_betaTrueVsRecoEnergy->Fill(betaTrueEnergy, betaRecoEnergy_plane2);
-	  }
-	  else{
-	    Bi214_betaFailedRecoTime->Fill(betaCreationTime);
-	  }
-	  //Now we are done with this beta so we 
-	  // need to fill the tree
-	  fTree->Fill();
-	} // end beta check
-      else
-	{continue;}//throw away everything else
-    } // end loop over truth particles
-  } // end loop over events 
-
-  // Now let's make plots!
-  // First we make a canvas
-  TCanvas* c1 = new TCanvas();
-  c1->cd();
-  // now we can draw our plots! 
-  Bi214_betaTrueEnergy->Draw("");
-
-  TCanvas* c2 = new TCanvas();
-  c2->cd();
-  // now we can draw our plots! 
-  Bi214_betaRecoEnergy->Draw("");
-  
-  TCanvas* c3 = new TCanvas();
-  c3->cd();
-  // now we can draw our plots! 
-  Bi214_betaTrueVsRecoEnergy->Draw("colz");
-
-  TCanvas* c4 = new TCanvas();
-  c4->cd();
-  // now we can draw our plots! 
-  Bi214_betaFailedRecoTime->Draw("");
-
-  //Let's write out our file and tree
-  out->cd();  
-  fTree->Write();
-
+    }
+  }
+  }
 }// End Program
 
 

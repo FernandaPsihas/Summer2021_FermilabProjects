@@ -143,7 +143,7 @@ void LookingAtClustersfromParticles(){
     //Convert our C++ "pointer" into an object
     // this is now and std::vector<simb::MCParticle> 
     auto all_mcparts(*mcpart_handle);
-    auto all_hits(*hit_handle);
+    auto gaus_hits(*hit_handle);
 
     std::vector< art::Ptr< recob::Cluster > > clusters;
     art::fill_ptr_vector(clusters, cluster_handle);
@@ -211,44 +211,57 @@ void LookingAtClustersfromParticles(){
 	auto hit = hits_in_my_cluster.at(ht);
 
 	if(hit->WireID().Plane != 2) std::cout << "You're doing it wrong!" << std::endl;
-	
-	/** 
-	    Look at the hits are matched to that cluster
-	    https://internal.dunescience.org/doxygen/classrecob_1_1Hit.html
 
-	**/
-	
-	hit_Q_for_cluster_vec[cust][ht] = hit->Integral();
-
-	std::vector<simb::MCParticle const*> parts_in_my_hit;
-	std::vector<anab::BackTrackerHitMatchingData const*> partInfo_in_my_hit;
-	parts_per_hit.get(hit.key(), parts_in_my_hit, partInfo_in_my_hit);
-
-	if(parts_in_my_hit.size() != 0) matched_to_mcpart = true;
-
-	mcpart_pdg_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
-	mcpart_frac_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
-	
-	//Let's look at the mcparticles matched to hits matched to clusters
-	for(int mcp = 0; mcp < parts_in_my_hit.size(); mcp++){
-
-	  auto mcpart = parts_in_my_hit.at(mcp);
-	  auto partInfo = partInfo_in_my_hit.at(mcp);
-	/** 
-	    Look at the mcparticles matched to hits that are matched to that cluster
-	**/
-
-	  if(mcpart->PdgCode() == 11 && mcpart->Mother() == 0){
-	    matched_to_truth_beta = true;
-	  }
-
-	  if(mcpart->PdgCode() == 1000020040 && mcpart->Mother() == 0){
-	    matched_to_truth_alpha = true;  
-	  }
-	  mcpart_pdg_for_hit_for_cluster_vec[cust][ht][mcp] = mcpart->PdgCode();
-	  mcpart_frac_for_hit_for_cluster_vec[cust][ht][mcp] = partInfo->energy;
-	}// end iteration over mcparticles
+	for(int ght = 0; ght < gaus_hits.size(); ght++){	
+		 
+	  auto gaus_hit = gaus_hits.at(ght);
+	  
+	  if(gaus_hit->RMS() != hit->RMS() &&
+	     gaus_hit->Integral() != hit->Integral() && 
+	     gaus_hit->StartTick() != hit->StartTick()){
+	    
+	    /** 
+		Look at the hits are matched to that cluster
+		https://internal.dunescience.org/doxygen/classrecob_1_1Hit.html
+		
+	    **/
+	    
+	    hit_Q_for_cluster_vec[cust][ht] = hit->Integral();
+	    
+	    std::vector<simb::MCParticle const*> parts_in_my_hit;
+	    std::vector<anab::BackTrackerHitMatchingData const*> partInfo_in_my_hit;
+	    parts_per_hit.get(gaus_hit.key(), parts_in_my_hit, partInfo_in_my_hit);
+	    
+	    if(parts_in_my_hit.size() != 0) matched_to_mcpart = true;
+	    
+	    mcpart_pdg_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
+	    mcpart_frac_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
+	    
+	    //Let's look at the mcparticles matched to hits matched to clusters
+	    for(int mcp = 0; mcp < parts_in_my_hit.size(); mcp++){
 	      
+	      auto mcpart = parts_in_my_hit.at(mcp);
+	      auto partInfo = partInfo_in_my_hit.at(mcp);
+	      /** 
+		  Look at the mcparticles matched to hits that are matched to that cluster
+	      **/
+	      
+	      if(mcpart->PdgCode() == 11 && mcpart->Mother() == 0){
+		matched_to_truth_beta = true;
+	      }
+	      
+	      if(mcpart->PdgCode() == 1000020040 && mcpart->Mother() == 0){
+		matched_to_truth_alpha = true;  
+	      }
+	      mcpart_pdg_for_hit_for_cluster_vec[cust][ht][mcp] = mcpart->PdgCode();
+	      mcpart_frac_for_hit_for_cluster_vec[cust][ht][mcp] = partInfo->energy;
+	      
+	    }// end iteration over mcparticles
+	    break;
+	  }//check hits
+	  
+	}// iterate over gaus hits
+	
       }// end iteration over hits
 
       // here we will all the cluster level information

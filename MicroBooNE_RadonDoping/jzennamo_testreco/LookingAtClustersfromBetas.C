@@ -46,6 +46,7 @@
 //I'll only need truth particle info for now:
 #include "nusimdata/SimulationBase/MCParticle.h"
 #include "lardataobj/RecoBase/Hit.h"
+#include "lardataobj/RecoBase/Cluster.h"
 #include "lardataobj/AnalysisBase/BackTrackerMatchingData.h"
 
 //This way you can be lazy
@@ -64,7 +65,7 @@ double FittedFunction(double *xx, double *par)
   return par[0]*BetaData->Eval(xx[0]);
 }
 
-void LookingAtHitsfromBetas(){
+void LookingAtClustersfromBetas(){
 
   // create a vector of files we want to process
   //  std::vector<std::string> filenames;
@@ -130,7 +131,24 @@ void LookingAtHitsfromBetas(){
     // this is now and std::vector<simb::MCParticle> 
     auto mcparts(*mcpart_handle);
 
+    auto const &hit_handle1 =    
+      ev.getValidHandle< std::vector<recob::Hit> >("cosmicfilter");
+
+    auto const &hit_handle2 =    
+      ev.getValidHandle< std::vector<recob::Hit> >("cosmicfilter");
+
+    auto const &cluster_handle = ev.getValidHandle< std::vector<recob::Cluster> >("gaushitproximity");
+
+    auto hits(*hit_handle);
+    //auto clusters(*cluster_handle); //not sure why this isn't needed (it isn't in sample code)
+
+    std::vector< art::Ptr< recob::Cluster > > clusters; //does this do the same thing as the previous line?
+    art::fill_ptr_vector(clusters, cluster_handle);
+
+
+
     art::FindManyP<recob::Hit, anab::BackTrackerHitMatchingData> hit_per_part(mcpart_handle,ev,"gaushitTruthMatch");     
+    art::FindManyP<recob::Cluster> hits_per_clust(hit_handle2,ev,"gaushitproximity");   
 
     
     // We can iterate through all the truth particles
@@ -171,8 +189,16 @@ void LookingAtHitsfromBetas(){
 	  for(auto hit : hit_vec){
 	    
 	    if(hit->WireID().Plane == 2){
-	      betaRecoEnergy_plane2 += hit->Integral();
-
+	      
+	      //betaRecoEnergy_plane2 += hit->Integral();
+	      auto clusts = hits_per_clust.at(hit.key());
+	      
+	      if(clusts.size() != 0)
+		std::cout << "This Hit Is Matched to This many Clusters: " << clusts.size() << std::endl;
+	      
+	      for(int clust = 0; clust < int(clusts.size()); clust++){
+		betaRecoEnergy_plane2 = clusts[clust]->Integral(); 
+	      }
 	      
 
 	      if(hit->PeakAmplitude() > betaMaxADCHit_plane2)
