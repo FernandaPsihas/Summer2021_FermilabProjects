@@ -310,6 +310,7 @@ void betaTree_Plane2::Loop()
      c[i] = new TCanvas();
      c[i]->cd();
      EnergyResolutionVsBetaReco[j]->SetTitle(Form("Plane 2: Energy Resolution in Beta Reco bin %d [%5f,%5f]", j, recoBins[j], recoBins[j+1]));
+     EnergyResolutionVsBetaReco[j]->Sumw2();
      EnergyResolutionVsBetaReco[j]->Fit(Form("RecoFit_bin_%d",j),"R");
      TF1 *fit = EnergyResolutionVsBetaReco[j]->GetFunction(Form("RecoFit_bin_%d",j));
      RecoMean[j] = fit->GetParameter(1);
@@ -346,17 +347,22 @@ void betaTree_Plane2::Loop()
    Means[3] = new TH1D("Means_Reco",";Reconstructed Energy (~MeV);Mean",8,0.5,3.3);
    Means[4] = new TH1D("Means_True",";True Energy (MeV);Mean",8,0.5,3.3);
 
-   Sigmas[0] = new TH1D("Sigmas_X",";Creation X (cm);Sigma",10,0,260);
-   Sigmas[1] = new TH1D("Sigmas_Y",";Creation Y (cm);Sigma",10,-120,120);
-   Sigmas[2] = new TH1D("Sigmas_Z",";Creation Z (cm);Sigma",10,0,1050);
-   Sigmas[3] = new TH1D("Sigmas_Reco",";Reconstructed Energy (~MeV);Sigma",8,0.5,3.3);
-   Sigmas[4] = new TH1D("Sigmas_Y",";True Energy (MeV);Sigma",8,0.5,3.3);
+   Sigmas[0] = new TH1D("Sigmas_X",";Creation X (cm);Width of gaussian fit",10,0,260);
+   Sigmas[1] = new TH1D("Sigmas_Y",";Creation Y (cm);Width of gaussian fit",10,-120,120);
+   Sigmas[2] = new TH1D("Sigmas_Z",";Creation Z (cm);Width of gaussian fit",10,0,1050);
+   Sigmas[3] = new TH1D("Sigmas_Reco",";Reconstructed Energy (~MeV);Width of gaussian fit",8,0.5,3.3);
+   Sigmas[4] = new TH1D("Sigmas_True",";True Energy (MeV);Width of gaussian fit",8,0.5,3.3);
 
    Resolutions[0] = new TH1D("Resos_X",";Creation X (cm);Resolution",10,0,260);
    Resolutions[1] = new TH1D("Resos_Y",";Creation Y (cm);Resolution",10,-120,120);
    Resolutions[2] = new TH1D("Resos_Z",";Creation Z (cm);Resolution",10,0,1050);
    Resolutions[3] = new TH1D("Resos_Reco",";Reconstructed Energy (~MeV);Resolution",8,0.5,3.3);
    Resolutions[4] = new TH1D("Resos_True",";True Energy (MeV);Resolution",8,0.5,3.3);
+   
+   TF1* fitSig = new TF1("fitSig","x*sqrt(pow([0]/sqrt(x),2) + pow([1]/x,2) + pow([2],2))",0.5,3.3);
+   fitSig->SetParameter(0,0.01);
+   fitSig->SetParameter(1,0.01);
+   fitSig->SetParameter(2,0.01);
 
    for(int i=0; i < 10; i++){
      Means[0]->Fill(xMid[i],XMean[i]);
@@ -418,9 +424,10 @@ void betaTree_Plane2::Loop()
    for(int i=0, j=5; i < 5, j < 10; i++, j++){
      b[j] = new TCanvas();
      b[j]->cd();
-     Sigmas[i]->SetTitle(Form("Sigma per bin for %s",type[i]));
+     Sigmas[i]->SetTitle(Form("Width of gaussian fit per bin for %s",type[i]));
      Sigmas[i]->SetMarkerStyle(kFullCrossX);
      Sigmas[i]->SetMarkerSize(1);
+     if(i == 3){Sigmas[i]->Fit("fitSig","R");}
      Sigmas[i]->Draw("EX0P");
      b[j]->SaveAs(Form("Sigma_perBin_%d.png",i));
    }
