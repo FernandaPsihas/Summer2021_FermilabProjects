@@ -168,6 +168,9 @@ void FittingBetaEnergy(){
   // of parameters you are looking to fit
   TF1 *betadata = new TF1("betadata",FittedFunction,0,3.27,1);
   Bi214_betaEnergy->Fit("betadata");
+  Bi214_betaEnergy->GetXaxis()->SetTitle("Bi214 Energy (MeV)");
+  Bi214_betaEnergy->GetYaxis()->SetTitle("Events");
+  Bi214_betaEnergy->SetTitle("Fitted Beta Spectrum");
   betadata->Draw("same");
   
 
