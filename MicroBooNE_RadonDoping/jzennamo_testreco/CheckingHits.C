@@ -142,7 +142,7 @@ void CheckingHits(){
 	if(hit1->RMS() == hit2->RMS() &&
 	   hit1->Integral() == hit2->Integral() && 
 	   hit1->StartTick() == hit2->StartTick()){
-	  std::cout << "key1 : " << hit1.key() << ", key2: " << hit2.key() << std::endl;
+	  std::cout << "key1 : " << hit1.key() << " h1 " << h1 << ", key2: " << hit2.key() << " h2 " << h2 << std::endl;
 	}
 
     }

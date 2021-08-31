@@ -3,6 +3,7 @@
 #include <TH2.h>
 #include <TStyle.h>
 #include <TCanvas.h>
+#include <iostream>
 
 void ClusterTree::Loop()
 {
@@ -42,39 +43,23 @@ void ClusterTree::Loop()
       if (ientry < 0) break;
       nb = fChain->GetEntry(jentry);   nbytes += nb;
       // if (Cut(ientry) < 0) continue;
+   
 
-            std::cout << "cluster size : " << cluster_x_vec->size() << std::endl;
-
+      std::cout << "cluster size : " << cluster_x_vec->size() << std::endl;
+      
       for(int clus = 0; clus < cluster_x_vec->size(); clus++){
 	if(cluster_IsTrueBeta_vec->at(clus) == true)
 	  matchedToBeta++;
- 
+	
 	if(cluster_IsTrueAlpha_vec->at(clus) == true)
 	  matchedToAlpha++;
-    
-	if(cluster_IsTrueBeta_vec->at(clus) == true && cluster_IsTrueAlpha_vec->at(clus) == true){
+	
+	if(cluster_IsTrueBeta_vec->at(clus) == true && cluster_IsTrueAlpha_vec->at(clus) == true)
 	  matchedToBetaAndAlpha++;
-	  
-	  int nhits = mcpart_frac_for_hit_for_cluster_vec->at(clus).size();
-	  
-	  for(int hits = 0; hits < nhits; hits++){	    
-	    int nparts = mcpart_frac_for_hit_for_cluster_vec->at(clus).at(hits).size();
-
-	    for(int parts = 0; parts < nparts; parts++){
-	      
-	      std::cout <<"PDG " << mcpart_pdg_for_hit_for_cluster_vec->at(clus).at(hits).at(parts) 
-			<< " frac : " << mcpart_frac_for_hit_for_cluster_vec->at(clus).at(hits).at(parts) << std::endl;  
-	      
-	    }
-
-	  }
-
-	}	
+	
 	
       }
    }
 
    std::cout << "N beta: " << matchedToBeta << ", N alpha: " << matchedToAlpha << ", N both : " << matchedToBetaAndAlpha << std::endl; 
-
-
 }

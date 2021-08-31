@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////
 // This class has been automatically generated on
-// Fri Jul  9 12:49:16 2021 by ROOT version 6.12/06
+// Tue Aug 31 10:20:50 2021 by ROOT version 6.12/06
 // from TTree ClusterTree/All information saved by cluster
 // found on file: ../outfile_mc_TEST.root
 //////////////////////////////////////////////////////////
@@ -27,21 +27,51 @@ public :
 
    // Declaration of leaf types
    vector<double>  *cluster_x_vec;
+   vector<double>  *cluster_z_vec;
+   vector<double>  *cluster_start_wire;
+   vector<double>  *cluster_end_wire;
+   vector<double>  *cluster_energy;
+   vector<double>  *cluster_avg_energy;
+   vector<double>  *cluster_std_energy;
+   vector<double>  *cluster_multi_hit_density;
    vector<bool>    *cluster_IsTrueBeta_vec;
    vector<bool>    *cluster_IsTrueAlpha_vec;
    vector<bool>    *cluster_MatchedToMCpart_vec;
    vector<vector<double> > *hit_Q_for_cluster_vec;
+   vector<vector<double> > *hit_sigma_for_cluster_vec;
+   vector<vector<double> > *hit_GOF_for_cluster_vec;
+   vector<vector<double> > *hit_mult_for_cluster_vec;
    vector<vector<vector<double> > > *mcpart_pdg_for_hit_for_cluster_vec;
+   vector<vector<vector<double> > > *mcpart_primary_for_hit_for_cluster_vec;
+   vector<vector<vector<double> > > *mcpart_trueX_for_hit_for_cluster_vec;
+   vector<vector<vector<double> > > *mcpart_trueY_for_hit_for_cluster_vec;
+   vector<vector<vector<double> > > *mcpart_trueZ_for_hit_for_cluster_vec;
    vector<vector<vector<double> > > *mcpart_frac_for_hit_for_cluster_vec;
+   vector<vector<vector<double> > > *mcpart_matched_energy_for_hit_for_cluster_vec;
 
    // List of branches
    TBranch        *b_cluster_x_vec;   //!
+   TBranch        *b_cluster_z_vec;   //!
+   TBranch        *b_cluster_start_wire;   //!
+   TBranch        *b_cluster_end_wire;   //!
+   TBranch        *b_cluster_energy;   //!
+   TBranch        *b_cluster_avg_energy;   //!
+   TBranch        *b_cluster_std_energy;   //!
+   TBranch        *b_cluster_multi_hit_density;   //!
    TBranch        *b_cluster_IsTrueBeta_vec;   //!
    TBranch        *b_cluster_IsTrueAlpha_vec;   //!
    TBranch        *b_cluster_MatchedToMCpart_vec;   //!
    TBranch        *b_hit_Q_for_cluster_vec;   //!
+   TBranch        *b_hit_sigma_for_cluster_vec;   //!
+   TBranch        *b_hit_GOF_for_cluster_vec;   //!
+   TBranch        *b_hit_mult_for_cluster_vec;   //!
    TBranch        *b_mcpart_pdg_for_hit_for_cluster_vec;   //!
+   TBranch        *b_mcpart_primary_for_hit_for_cluster_vec;   //!
+   TBranch        *b_mcpart_trueX_for_hit_for_cluster_vec;   //!
+   TBranch        *b_mcpart_trueY_for_hit_for_cluster_vec;   //!
+   TBranch        *b_mcpart_trueZ_for_hit_for_cluster_vec;   //!
    TBranch        *b_mcpart_frac_for_hit_for_cluster_vec;   //!
+   TBranch        *b_mcpart_matched_energy_for_hit_for_cluster_vec;   //!
 
    ClusterTree(TTree *tree=0);
    virtual ~ClusterTree();
@@ -109,12 +139,27 @@ void ClusterTree::Init(TTree *tree)
 
    // Set object pointer
    cluster_x_vec = 0;
+   cluster_z_vec = 0;
+   cluster_start_wire = 0;
+   cluster_end_wire = 0;
+   cluster_energy = 0;
+   cluster_avg_energy = 0;
+   cluster_std_energy = 0;
+   cluster_multi_hit_density = 0;
    cluster_IsTrueBeta_vec = 0;
    cluster_IsTrueAlpha_vec = 0;
    cluster_MatchedToMCpart_vec = 0;
    hit_Q_for_cluster_vec = 0;
+   hit_sigma_for_cluster_vec = 0;
+   hit_GOF_for_cluster_vec = 0;
+   hit_mult_for_cluster_vec = 0;
    mcpart_pdg_for_hit_for_cluster_vec = 0;
+   mcpart_primary_for_hit_for_cluster_vec = 0;
+   mcpart_trueX_for_hit_for_cluster_vec = 0;
+   mcpart_trueY_for_hit_for_cluster_vec = 0;
+   mcpart_trueZ_for_hit_for_cluster_vec = 0;
    mcpart_frac_for_hit_for_cluster_vec = 0;
+   mcpart_matched_energy_for_hit_for_cluster_vec = 0;
    // Set branch addresses and branch pointers
    if (!tree) return;
    fChain = tree;
@@ -122,12 +167,27 @@ void ClusterTree::Init(TTree *tree)
    fChain->SetMakeClass(1);
 
    fChain->SetBranchAddress("cluster_x_vec", &cluster_x_vec, &b_cluster_x_vec);
+   fChain->SetBranchAddress("cluster_z_vec", &cluster_z_vec, &b_cluster_z_vec);
+   fChain->SetBranchAddress("cluster_start_wire", &cluster_start_wire, &b_cluster_start_wire);
+   fChain->SetBranchAddress("cluster_end_wire", &cluster_end_wire, &b_cluster_end_wire);
+   fChain->SetBranchAddress("cluster_energy", &cluster_energy, &b_cluster_energy);
+   fChain->SetBranchAddress("cluster_avg_energy", &cluster_avg_energy, &b_cluster_avg_energy);
+   fChain->SetBranchAddress("cluster_std_energy", &cluster_std_energy, &b_cluster_std_energy);
+   fChain->SetBranchAddress("cluster_multi_hit_density", &cluster_multi_hit_density, &b_cluster_multi_hit_density);
    fChain->SetBranchAddress("cluster_IsTrueBeta_vec", &cluster_IsTrueBeta_vec, &b_cluster_IsTrueBeta_vec);
    fChain->SetBranchAddress("cluster_IsTrueAlpha_vec", &cluster_IsTrueAlpha_vec, &b_cluster_IsTrueAlpha_vec);
    fChain->SetBranchAddress("cluster_MatchedToMCpart_vec", &cluster_MatchedToMCpart_vec, &b_cluster_MatchedToMCpart_vec);
    fChain->SetBranchAddress("hit_Q_for_cluster_vec", &hit_Q_for_cluster_vec, &b_hit_Q_for_cluster_vec);
+   fChain->SetBranchAddress("hit_sigma_for_cluster_vec", &hit_sigma_for_cluster_vec, &b_hit_sigma_for_cluster_vec);
+   fChain->SetBranchAddress("hit_GOF_for_cluster_vec", &hit_GOF_for_cluster_vec, &b_hit_GOF_for_cluster_vec);
+   fChain->SetBranchAddress("hit_mult_for_cluster_vec", &hit_mult_for_cluster_vec, &b_hit_mult_for_cluster_vec);
    fChain->SetBranchAddress("mcpart_pdg_for_hit_for_cluster_vec", &mcpart_pdg_for_hit_for_cluster_vec, &b_mcpart_pdg_for_hit_for_cluster_vec);
+   fChain->SetBranchAddress("mcpart_primary_for_hit_for_cluster_vec", &mcpart_primary_for_hit_for_cluster_vec, &b_mcpart_primary_for_hit_for_cluster_vec);
+   fChain->SetBranchAddress("mcpart_trueX_for_hit_for_cluster_vec", &mcpart_trueX_for_hit_for_cluster_vec, &b_mcpart_trueX_for_hit_for_cluster_vec);
+   fChain->SetBranchAddress("mcpart_trueY_for_hit_for_cluster_vec", &mcpart_trueY_for_hit_for_cluster_vec, &b_mcpart_trueY_for_hit_for_cluster_vec);
+   fChain->SetBranchAddress("mcpart_trueZ_for_hit_for_cluster_vec", &mcpart_trueZ_for_hit_for_cluster_vec, &b_mcpart_trueZ_for_hit_for_cluster_vec);
    fChain->SetBranchAddress("mcpart_frac_for_hit_for_cluster_vec", &mcpart_frac_for_hit_for_cluster_vec, &b_mcpart_frac_for_hit_for_cluster_vec);
+   fChain->SetBranchAddress("mcpart_matched_energy_for_hit_for_cluster_vec", &mcpart_matched_energy_for_hit_for_cluster_vec, &b_mcpart_matched_energy_for_hit_for_cluster_vec);
    Notify();
 }
 

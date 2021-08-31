@@ -91,37 +91,90 @@ void LookingAtClustersfromParticles(){
   
   //Cluster info
   std::vector<double> cluster_x_vec;
+  std::vector<double> cluster_z_vec;
+  std::vector<double> cluster_start_wire;
+  std::vector<double> cluster_end_wire;
+  std::vector<double> cluster_energy;
+  std::vector<double> cluster_avg_energy; //IntegralAverage()
+  std::vector<double> cluster_std_energy; //IntegralStdDev()
+  std::vector<double> cluster_multi_hit_density; //MultipleHitDensity()
+ 
   std::vector<bool> cluster_IsTrueBeta_vec;
   std::vector<bool> cluster_IsTrueAlpha_vec;
   std::vector<bool> cluster_MatchedToMCpart_vec;
   
   fTree->Branch("cluster_x_vec",&cluster_x_vec);
+  fTree->Branch("cluster_z_vec",&cluster_z_vec);
+  fTree->Branch("cluster_start_wire",&cluster_start_wire);
+  fTree->Branch("cluster_end_wire",&cluster_end_wire);
+  fTree->Branch("cluster_energy",&cluster_energy);
+  fTree->Branch("cluster_avg_energy",&cluster_avg_energy);
+  fTree->Branch("cluster_std_energy",&cluster_std_energy);
+  fTree->Branch("cluster_multi_hit_density",&cluster_multi_hit_density);
   fTree->Branch("cluster_IsTrueBeta_vec",&cluster_IsTrueBeta_vec);
   fTree->Branch("cluster_IsTrueAlpha_vec",&cluster_IsTrueAlpha_vec);
   fTree->Branch("cluster_MatchedToMCpart_vec",&cluster_MatchedToMCpart_vec);
 
   //Hit info
-  std::vector< std::vector< double> > hit_Q_for_cluster_vec;
+  std::vector< std::vector< double> > hit_Q_for_cluster_vec;//Integral
+  std::vector< std::vector< double> > hit_sigma_for_cluster_vec;//RMS
+  std::vector< std::vector< double> > hit_GOF_for_cluster_vec;//GoodnessOfFit
+  std::vector< std::vector< double> > hit_mult_for_cluster_vec;//Multiplicity
+
   fTree->Branch("hit_Q_for_cluster_vec",&hit_Q_for_cluster_vec);
+  fTree->Branch("hit_sigma_for_cluster_vec",&hit_sigma_for_cluster_vec);
+  fTree->Branch("hit_GOF_for_cluster_vec",&hit_GOF_for_cluster_vec);
+  fTree->Branch("hit_mult_for_cluster_vec",&hit_mult_for_cluster_vec);
 
   //MCPart info  
   std::vector< std::vector< std::vector< double > > > mcpart_pdg_for_hit_for_cluster_vec;
+  std::vector< std::vector< std::vector< double > > > mcpart_primary_for_hit_for_cluster_vec;
+
+  std::vector< std::vector< std::vector< double > > > mcpart_trueX_for_hit_for_cluster_vec;
+  std::vector< std::vector< std::vector< double > > > mcpart_trueY_for_hit_for_cluster_vec;
+  std::vector< std::vector< std::vector< double > > > mcpart_trueZ_for_hit_for_cluster_vec;
+
   std::vector< std::vector< std::vector< double > > > mcpart_frac_for_hit_for_cluster_vec;
+  std::vector< std::vector< std::vector< double > > > mcpart_matched_energy_for_hit_for_cluster_vec;
+
   fTree->Branch("mcpart_pdg_for_hit_for_cluster_vec",&mcpart_pdg_for_hit_for_cluster_vec);
+  fTree->Branch("mcpart_primary_for_hit_for_cluster_vec",&mcpart_primary_for_hit_for_cluster_vec);
+
+  fTree->Branch("mcpart_trueX_for_hit_for_cluster_vec",&mcpart_trueX_for_hit_for_cluster_vec);
+  fTree->Branch("mcpart_trueY_for_hit_for_cluster_vec",&mcpart_trueY_for_hit_for_cluster_vec);
+  fTree->Branch("mcpart_trueZ_for_hit_for_cluster_vec",&mcpart_trueZ_for_hit_for_cluster_vec);
+
   fTree->Branch("mcpart_frac_for_hit_for_cluster_vec",&mcpart_frac_for_hit_for_cluster_vec);
+  fTree->Branch("mcpart_matched_energy_for_hit_for_cluster_vec",&mcpart_matched_energy_for_hit_for_cluster_vec);
+
 
   // Here we will loop through all the events in that file:
   for (gallery::Event ev(filenames) ; !ev.atEnd(); ev.next()) {
     
     // BE SURE TO CLEAR EVERYTHING!
     cluster_x_vec.clear();
+    cluster_z_vec.clear();
+    cluster_start_wire.clear();
+    cluster_end_wire.clear();
+    cluster_energy.clear();
+    cluster_avg_energy.clear();
+    cluster_std_energy.clear();
+    cluster_multi_hit_density.clear();
     cluster_IsTrueBeta_vec.clear();
     cluster_IsTrueAlpha_vec.clear();
     cluster_MatchedToMCpart_vec.clear();
     hit_Q_for_cluster_vec.clear();
+    hit_sigma_for_cluster_vec.clear();
+    hit_GOF_for_cluster_vec.clear();
+    hit_mult_for_cluster_vec.clear();
     mcpart_pdg_for_hit_for_cluster_vec.clear();
+    mcpart_trueX_for_hit_for_cluster_vec.clear();
+    mcpart_trueY_for_hit_for_cluster_vec.clear();
+    mcpart_trueZ_for_hit_for_cluster_vec.clear();
+    mcpart_primary_for_hit_for_cluster_vec.clear();
     mcpart_frac_for_hit_for_cluster_vec.clear();
-
+    mcpart_matched_energy_for_hit_for_cluster_vec.clear();
+    
     // We want to get new "data products" out of the files here
     // currently we are intersted in the truth particles 
     //  .. You can find more data products on the event by doing:
@@ -160,12 +213,28 @@ void LookingAtClustersfromParticles(){
 
     std::cout << "N clusters : " << clusters.size() << std::endl;
     cluster_x_vec.resize(clusters.size());
+    cluster_z_vec.resize(clusters.size());
+    cluster_start_wire.resize(clusters.size());
+    cluster_end_wire.resize(clusters.size());
+    cluster_energy.resize(clusters.size());
+    cluster_avg_energy.resize(clusters.size());
+    cluster_std_energy.resize(clusters.size());
+    cluster_multi_hit_density.resize(clusters.size());
     cluster_IsTrueBeta_vec.resize(clusters.size());
     cluster_IsTrueAlpha_vec.resize(clusters.size());
     cluster_MatchedToMCpart_vec.resize(clusters.size());
     hit_Q_for_cluster_vec.resize(clusters.size());
+    hit_sigma_for_cluster_vec.resize(clusters.size());
+    hit_GOF_for_cluster_vec.resize(clusters.size());
+    hit_mult_for_cluster_vec.resize(clusters.size());
     mcpart_pdg_for_hit_for_cluster_vec.resize(clusters.size());
+    mcpart_trueX_for_hit_for_cluster_vec.resize(clusters.size());
+    mcpart_trueY_for_hit_for_cluster_vec.resize(clusters.size());
+    mcpart_trueZ_for_hit_for_cluster_vec.resize(clusters.size());
+    mcpart_primary_for_hit_for_cluster_vec.resize(clusters.size());
     mcpart_frac_for_hit_for_cluster_vec.resize(clusters.size());
+    mcpart_matched_energy_for_hit_for_cluster_vec.resize(clusters.size());
+
 
      // Let's look at all the clusters 
     for(int cust = 0; cust < clusters.size(); cust++){
@@ -195,15 +264,32 @@ void LookingAtClustersfromParticles(){
       // 
 
       cluster_x_vec[cust] = cluster_x;
+      cluster_z_vec[cust] = cluster_z;
+
+      cluster_start_wire[cust] = start_wire;
+      cluster_end_wire[cust] = end_wire;
+      cluster_energy[cust] = cluster->Integral();
+      cluster_avg_energy[cust] = cluster->IntegralAverage();
+      cluster_std_energy[cust] = cluster->IntegralStdDev();
+      cluster_multi_hit_density[cust] = cluster->MultipleHitDensity();
+
       bool matched_to_mcpart = false;
       bool matched_to_truth_beta = false;
       bool matched_to_truth_alpha = false;
       auto hits_in_my_cluster = hits_per_clust.at(cluster.key());
 
-
       hit_Q_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
+      hit_sigma_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
+      hit_GOF_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
+      hit_mult_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
+
       mcpart_pdg_for_hit_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
+      mcpart_trueX_for_hit_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
+      mcpart_trueY_for_hit_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
+      mcpart_trueZ_for_hit_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
+      mcpart_primary_for_hit_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
       mcpart_frac_for_hit_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
+      mcpart_matched_energy_for_hit_for_cluster_vec[cust].resize(hits_in_my_cluster.size());
 
       // Let's look at the hits matched to clusters
       for(int ht = 0; ht < hits_in_my_cluster.size(); ht++){
@@ -216,9 +302,9 @@ void LookingAtClustersfromParticles(){
 		 
 	  auto gaus_hit = gaus_hits.at(ght);
 	  
-	  if(gaus_hit->RMS() != hit->RMS() &&
-	     gaus_hit->Integral() != hit->Integral() && 
-	     gaus_hit->StartTick() != hit->StartTick()){
+	  if(gaus_hit.RMS() != hit->RMS() &&
+	     gaus_hit.Integral() != hit->Integral() && 
+	     gaus_hit.StartTick() != hit->StartTick()){
 	    
 	    /** 
 		Look at the hits are matched to that cluster
@@ -227,16 +313,25 @@ void LookingAtClustersfromParticles(){
 	    **/
 	    
 	    hit_Q_for_cluster_vec[cust][ht] = hit->Integral();
+	    hit_sigma_for_cluster_vec[cust][ht] = hit->RMS();
+	    hit_GOF_for_cluster_vec[cust][ht] = hit->GoodnessOfFit();
+	    hit_mult_for_cluster_vec[cust][ht] = hit->Multiplicity();
 	    
 	    std::vector<simb::MCParticle const*> parts_in_my_hit;
 	    std::vector<anab::BackTrackerHitMatchingData const*> partInfo_in_my_hit;
-	    parts_per_hit.get(gaus_hit.key(), parts_in_my_hit, partInfo_in_my_hit);
+	    parts_per_hit.get(ght, parts_in_my_hit, partInfo_in_my_hit);
 	    
 	    if(parts_in_my_hit.size() != 0) matched_to_mcpart = true;
-	    
+
 	    mcpart_pdg_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
+	    mcpart_trueX_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
+	    mcpart_trueY_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
+	    mcpart_trueZ_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
+	    mcpart_pdg_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
+	    mcpart_primary_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
 	    mcpart_frac_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
-	    
+	    mcpart_matched_energy_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
+	   
 	    //Let's look at the mcparticles matched to hits matched to clusters
 	    for(int mcp = 0; mcp < parts_in_my_hit.size(); mcp++){
 	      
@@ -253,8 +348,22 @@ void LookingAtClustersfromParticles(){
 	      if(mcpart->PdgCode() == 1000020040 && mcpart->Mother() == 0){
 		matched_to_truth_alpha = true;  
 	      }
+
 	      mcpart_pdg_for_hit_for_cluster_vec[cust][ht][mcp] = mcpart->PdgCode();
-	      mcpart_frac_for_hit_for_cluster_vec[cust][ht][mcp] = partInfo->energy;
+	      mcpart_trueX_for_hit_for_cluster_vec[cust][ht][mcp] = mcpart->Vx(0);
+	      mcpart_trueY_for_hit_for_cluster_vec[cust][ht][mcp] = mcpart->Vy(0);
+	      mcpart_trueZ_for_hit_for_cluster_vec[cust][ht][mcp] = mcpart->Vz(0);
+
+	      mcpart_frac_for_hit_for_cluster_vec[cust][ht][mcp] = partInfo->ideNFraction;
+	      mcpart_matched_energy_for_hit_for_cluster_vec[cust][ht][mcp] = partInfo->energy;
+	      
+	      if(mcpart->Mother() == 0){
+		mcpart_primary_for_hit_for_cluster_vec[cust][ht][mcp] = 1;
+	      }
+	      else{
+		mcpart_primary_for_hit_for_cluster_vec[cust][ht][mcp] = 0;
+	      }
+
 	      
 	    }// end iteration over mcparticles
 	    break;
