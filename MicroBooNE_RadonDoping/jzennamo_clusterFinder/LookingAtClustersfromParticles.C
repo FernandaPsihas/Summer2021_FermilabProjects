@@ -302,9 +302,9 @@ void LookingAtClustersfromParticles(){
 		 
 	  auto gaus_hit = gaus_hits.at(ght);
 	  
-	  if(gaus_hit.RMS() != hit->RMS() &&
-	     gaus_hit.Integral() != hit->Integral() && 
-	     gaus_hit.StartTick() != hit->StartTick()){
+	  if(gaus_hit.RMS() == hit->RMS() &&
+	     gaus_hit.Integral() == hit->Integral() && 
+	     gaus_hit.StartTick() == hit->StartTick()){
 	    
 	    /** 
 		Look at the hits are matched to that cluster
@@ -320,7 +320,7 @@ void LookingAtClustersfromParticles(){
 	    std::vector<simb::MCParticle const*> parts_in_my_hit;
 	    std::vector<anab::BackTrackerHitMatchingData const*> partInfo_in_my_hit;
 	    parts_per_hit.get(ght, parts_in_my_hit, partInfo_in_my_hit);
-	    
+	    	    
 	    if(parts_in_my_hit.size() != 0) matched_to_mcpart = true;
 
 	    mcpart_pdg_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
@@ -331,7 +331,7 @@ void LookingAtClustersfromParticles(){
 	    mcpart_primary_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
 	    mcpart_frac_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
 	    mcpart_matched_energy_for_hit_for_cluster_vec[cust][ht].resize(parts_in_my_hit.size());
-	   
+	   	   
 	    //Let's look at the mcparticles matched to hits matched to clusters
 	    for(int mcp = 0; mcp < parts_in_my_hit.size(); mcp++){
 	      
@@ -340,6 +340,8 @@ void LookingAtClustersfromParticles(){
 	      /** 
 		  Look at the mcparticles matched to hits that are matched to that cluster
 	      **/
+	      if(mcpart->PdgCode() != 11)
+		std::cout << mcpart->PdgCode() << std::endl;
 	      
 	      if(mcpart->PdgCode() == 11 && mcpart->Mother() == 0){
 		matched_to_truth_beta = true;
